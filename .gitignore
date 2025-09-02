@@ -1,0 +1,70 @@
+# Sensitive Configuration Files
+config.txt
+.env
+*.env
+serversettings.json
+
+# Discord Bot Token and Secrets
+token.txt
+secrets/
+
+# Log Files
+*.log
+logs/
+bot_output.log
+bot_error.log
+bot_test_output.log
+bot_test_error.log
+lavalink_output.log
+lavalink_error.log
+
+# Java Build Files
+/nbproject/
+/target/
+*.jar
+*.war
+*.class
+nb*.xml
+
+# IDE Files
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+
+# OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary Files
+temp/
+tmp/
+*.tmp
+*.temp
+
+# Backup Files
+*backup*
+Old Music Backup Folder/
+
+# Docker Runtime Files
+.docker/data/
+
+# Music/Audio Files
+*.mp3
+*.wav
+*.ogg
+*.flac
+/Playlists/
+
+# Test Files
+/test/
+
+# Allow example configuration files
+!config.example.txt
+!.env.example
+!docker-compose.example.yml

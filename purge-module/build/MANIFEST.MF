@@ -1,0 +1,2 @@
+Main-Class: com.purgebot.PurgeBot
+Class-Path: lib/JDA-5.0.0-beta.21-withDependencies.jar

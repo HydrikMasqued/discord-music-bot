@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  musicbot:
+    build: .
+    container_name: discord-music-bot
+    restart: unless-stopped
+    environment:
+      # Discord Bot Configuration
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
+      - OWNER_ID=${OWNER_ID}
+      - COMMAND_PREFIX=${COMMAND_PREFIX:-!}
+      
+      # Bot Settings
+      - MAX_TIME=${MAX_TIME:-600}
+      - STAY_IN_CHANNEL=${STAY_IN_CHANNEL:-true}
+      - ALONE_TIME_UNTIL_STOP=${ALONE_TIME_UNTIL_STOP:-300}
+      - SKIP_RATIO=${SKIP_RATIO:-0.55}
+      
+      # Java Settings
+      - JAVA_OPTS=-Xmx1024m -Xms512m
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      
+    volumes:
+      # Persist playlists and configuration
+      - ./Playlists:/app/Playlists
+      - ./logs:/app/logs
+      - ./config.txt:/app/config.txt:ro
+      
+    # Resource limits for cloud deployment
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+        reservations:
+          memory: 512M
+          cpus: '0.25'
+    
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "musicbot.jar"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Optional: Lavalink for better audio quality (uncomment if needed)
+  # lavalink:
+  #   image: ghcr.io/lavalink-devs/lavalink:4
+  #   container_name: lavalink-server
+  #   restart: unless-stopped
+  #   environment:
+  #     - _JAVA_OPTIONS=-Xmx1G
+  #     - SERVER_PORT=2333
+  #   volumes:
+  #     - ./lavalink/application.yml:/opt/Lavalink/application.yml:ro
+  #   ports:
+  #     - "2333:2333"
+
+networks:
+  default:
+    name: musicbot-network
