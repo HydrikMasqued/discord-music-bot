@@ -17,15 +17,44 @@ console.log('══════════════════════�
 // Check if Java is available
 function checkJava() {
     return new Promise((resolve) => {
-        const javaCheck = spawn('java', ['-version'], { stdio: 'pipe' });
+        // Common Java paths to check
+        const javaPaths = [
+            'java',
+            '/usr/bin/java',
+            '/usr/local/bin/java',
+            '/opt/java/bin/java',
+            '/usr/lib/jvm/default-java/bin/java',
+            '/usr/lib/jvm/java-17-openjdk/bin/java',
+            '/usr/lib/jvm/java-11-openjdk/bin/java'
+        ];
         
-        javaCheck.on('close', (code) => {
-            resolve(code === 0);
-        });
+        let pathIndex = 0;
         
-        javaCheck.on('error', () => {
-            resolve(false);
-        });
+        function tryNextPath() {
+            if (pathIndex >= javaPaths.length) {
+                resolve({ success: false, path: null });
+                return;
+            }
+            
+            const javaPath = javaPaths[pathIndex];
+            const javaCheck = spawn(javaPath, ['-version'], { stdio: 'pipe' });
+            
+            javaCheck.on('close', (code) => {
+                if (code === 0) {
+                    resolve({ success: true, path: javaPath });
+                } else {
+                    pathIndex++;
+                    tryNextPath();
+                }
+            });
+            
+            javaCheck.on('error', () => {
+                pathIndex++;
+                tryNextPath();
+            });
+        }
+        
+        tryNextPath();
     });
 }
 
@@ -46,13 +75,26 @@ async function startBot() {
     console.log('🔍 Checking system requirements...');
     
     // Check Java
-    const hasJava = await checkJava();
-    if (!hasJava) {
+    const javaResult = await checkJava();
+    if (!javaResult.success) {
         console.error('❌ Java is not installed or not available in PATH');
-        console.error('   Please ensure Java 17+ is installed');
+        console.error('   Tried these paths:');
+        console.error('   • java (system PATH)');
+        console.error('   • /usr/bin/java');
+        console.error('   • /usr/local/bin/java');
+        console.error('   • /opt/java/bin/java');
+        console.error('   • /usr/lib/jvm/default-java/bin/java');
+        console.error('   • /usr/lib/jvm/java-17-openjdk/bin/java');
+        console.error('   • /usr/lib/jvm/java-11-openjdk/bin/java');
+        console.error('');
+        console.error('🔧 Solutions:');
+        console.error('   1. Contact Cybrancee support to install Java 17+');
+        console.error('   2. Request server migration to Java environment');
+        console.error('   3. Install Java manually if you have server access');
         process.exit(1);
     }
-    console.log('✅ Java is available');
+    console.log(`✅ Java found at: ${javaResult.path}`);
+    const javaPath = javaResult.path;
     
     // Check bot file
     if (!checkBotFile()) {
@@ -82,10 +124,10 @@ async function startBot() {
         'JMusicBot-0.4.3.jar'
     ];
     
-    console.log(`   Command: java ${javaArgs.join(' ')}`);
+    console.log(`   Command: ${javaPath} ${javaArgs.join(' ')}`);
     console.log('');
     
-    const bot = spawn('java', javaArgs, {
+    const bot = spawn(javaPath, javaArgs, {
         stdio: ['inherit', 'inherit', 'inherit'],
         cwd: __dirname
     });
