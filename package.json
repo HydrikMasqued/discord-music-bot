@@ -1,0 +1,33 @@
+{
+  "name": "discord-music-bot",
+  "version": "1.0.0",
+  "description": "🎵 A powerful Discord music bot optimized for Cybrancee cloud deployment",
+  "main": "start.js",
+  "scripts": {
+    "start": "node start.js",
+    "bot": "node start.js",
+    "dev": "node start.js"
+  },
+  "keywords": [
+    "discord",
+    "music",
+    "bot",
+    "jmusicbot",
+    "cybrancee",
+    "cloud",
+    "java"
+  ],
+  "author": "HydrikMasqued",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HydrikMasqued/discord-music-bot.git"
+  },
+  "homepage": "https://github.com/HydrikMasqued/discord-music-bot",
+  "bugs": {
+    "url": "https://github.com/HydrikMasqued/discord-music-bot/issues"
+  }
+}
